@@ -5,6 +5,10 @@ on:
     - cron: "*/5 * * * *"   # toutes les 5 minutes (UTC)
   workflow_dispatch:        # bouton manuel
 
+# <-- IMPORTANT : donne au workflow le droit d'écrire dans le repo
+permissions:
+  contents: write
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -26,7 +30,20 @@ jobs:
         env:
           TWELVE_API_KEY: ${{ secrets.TWELVE_API_KEY }}
           GIST_ID:        ${{ secrets.GIST_ID }}
-          # ⚠️ Utilise TON secret perso (scope gist) :
+          # Ton token perso (scope "gist") stocké comme secret GH_GIST_TOKEN
           GITHUB_TOKEN:   ${{ secrets.GH_GIST_TOKEN }}
         run: |
           python twelve2gist.py
+
+      # <-- NOUVELLE ÉTAPE : commit/push du fichier dans le repo
+      - name: Commit to repo if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain eurusd-m5-latest.txt)" ]; then
+            git add eurusd-m5-latest.txt
+            git commit -m "update feed [skip ci]"
+            git push
+          else
+            echo "No changes to commit."
+          fi
