@@ -50,6 +50,12 @@ def main():
             vals = fetch_twelvedata_m5()
             tsv = values_to_tsv(vals)
             upload_gist(tsv)
+
+            # <<< AJOUT ICI >>>
+            with open("eurusd-m5-latest.txt", "w", encoding="utf-8") as f:
+                f.write(tsv)
+            # <<< FIN AJOUT >>>
+
             print("OK: Gist mis à jour. Lignes:", len(tsv.splitlines()))
             if tsv:
                 print("Top line:", tsv.splitlines()[0])
