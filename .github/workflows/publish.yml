@@ -3,7 +3,7 @@ name: Publish EURUSD M5 to Gist
 on:
   schedule:
     - cron: "*/5 * * * *"   # toutes les 5 minutes (UTC)
-  workflow_dispatch:        # bouton Run workflow
+  workflow_dispatch:        # bouton manuel
 
 jobs:
   run:
@@ -26,6 +26,7 @@ jobs:
         env:
           TWELVE_API_KEY: ${{ secrets.TWELVE_API_KEY }}
           GIST_ID:        ${{ secrets.GIST_ID }}
-          GITHUB_TOKEN:   ${{ secrets.GITHUB_TOKEN }}
+          # ⚠️ Utilise TON secret perso (scope gist) :
+          GITHUB_TOKEN:   ${{ secrets.GH_GIST_TOKEN }}
         run: |
           python twelve2gist.py
