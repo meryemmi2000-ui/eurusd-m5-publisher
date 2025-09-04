@@ -1,0 +1,31 @@
+name: Publish EURUSD M5 to Gist
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # toutes les 5 minutes (UTC)
+  workflow_dispatch:        # bouton Run workflow
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run publisher
+        env:
+          TWELVE_API_KEY: ${{ secrets.TWELVE_API_KEY }}
+          GIST_ID:        ${{ secrets.GIST_ID }}
+          GITHUB_TOKEN:   ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python twelve2gist.py
