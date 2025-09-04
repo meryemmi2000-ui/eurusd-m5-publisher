@@ -34,8 +34,18 @@ jobs:
           GITHUB_TOKEN:   ${{ secrets.GH_GIST_TOKEN }}
         run: |
           python twelve2gist.py
+          
+      - name: Upload to Dropbox
+        env:
+          DROPBOX_TOKEN: ${{ secrets.DROPBOX_TOKEN }}
+        run: |
+          # upload/overwrite the file
+          curl -sS -X POST https://content.dropboxapi.com/2/files/upload \
+            --header "Authorization: Bearer $DROPBOX_TOKEN" \
+            --header "Dropbox-API-Arg: {\"path\":\"/eurusd-m5-latest.txt\",\"mode\":\"overwrite\",\"mute\":true}" \
+            --header "Content-Type: application/octet-stream" \
+            --data-binary @eurusd-m5-latest.txt
 
-      # <-- NOUVELLE ÉTAPE : commit/push du fichier dans le repo
       - name: Commit to repo if changed
         run: |
           git config user.name  "github-actions[bot]"
